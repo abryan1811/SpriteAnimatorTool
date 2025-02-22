@@ -17,3 +17,4 @@ packages/
 *.cache
 *.vspscc
 ~$*.docx
+*.png
