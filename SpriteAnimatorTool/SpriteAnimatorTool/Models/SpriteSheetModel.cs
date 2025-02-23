@@ -17,16 +17,18 @@ namespace SpriteAnimatorTool.Models
         public int FrameWidth { get; private set; }
         public int FrameHeight { get; private set; }
 
-        public SpriteSheetModel(string imagePath, int frameWidth, int frameHeight)
+        public SpriteSheetModel(string imagePath, int frameWidth, int frameHeight, int numberOfSprites)
         {
             SpriteSheet = new BitmapImage();
             SpriteSheet.BeginInit();
             SpriteSheet.UriSource = new Uri(imagePath, UriKind.RelativeOrAbsolute);
+            SpriteSheet.CacheOption = BitmapCacheOption.OnLoad; 
+            SpriteSheet.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
             SpriteSheet.EndInit();
-            
-            frameHeight = FrameHeight;
-            frameWidth = FrameWidth;    
-        } 
+
+            FrameWidth = frameWidth / numberOfSprites;
+            FrameHeight = frameHeight;
+        }
 
     }
 }

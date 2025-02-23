@@ -28,20 +28,34 @@ namespace SpriteAnimatorTool.ViewModels
 
         public int FramesPerRow { get; private set; }
         public int TotalFrames { get; private set; }
+
+        public int UserFrameInput;
                        
         public SpriteSheetViewModel() 
-        { 
-            SpriteSheetModel = new SpriteSheetModel("C:/Users/adam1/Documents/Run.png", 1024, 128);
+        {
+            UserInputNumberOfSprites();
 
-            FindFirstSpriteImage();
+
+            SpriteSheetModel = new SpriteSheetModel("C:/Users/adam1/Documents/Run.png", 1024, 128, UserFrameInput);
+
+            CheckFramesOfSpriteSheet();
             CurrentFrame = GetFrame(0);
         }
 
-        public void FindFirstSpriteImage()
+        public void UserInputNumberOfSprites()
         {
-            FramesPerRow = SpriteSheetModel.SpriteSheet.PixelHeight / SpriteSheetModel.FrameWidth;
+            UserFrameInput = 8;
+        }
 
-            int rows = SpriteSheetModel.SpriteSheet.PixelHeight / SpriteSheetModel.FrameHeight;
+        public void CheckFramesOfSpriteSheet()
+        {
+           
+
+            int sheetWidth = SpriteSheetModel.SpriteSheet.PixelWidth;
+            int sheetHeight = SpriteSheetModel.SpriteSheet.PixelHeight;
+
+            FramesPerRow = sheetWidth / SpriteSheetModel.FrameWidth;
+            int rows = sheetHeight / SpriteSheetModel.FrameHeight;
             TotalFrames = FramesPerRow * rows;
         }
 
@@ -50,17 +64,17 @@ namespace SpriteAnimatorTool.ViewModels
             if (frameIndex < 0 || frameIndex >= TotalFrames)
                 throw new ArgumentOutOfRangeException(nameof(frameIndex));
 
-            int row = frameIndex / FramesPerRow;
+            int row = frameIndex / FramesPerRow;  
             int column = frameIndex % FramesPerRow;
 
-            var croppingRect = new Int32Rect(
-                column * SpriteSheetModel.FrameWidth,
-                row * SpriteSheetModel.FrameHeight,
-                SpriteSheetModel.FrameWidth,
-                SpriteSheetModel.FrameHeight);
+            int x = column * SpriteSheetModel.FrameWidth;
+            int y = row * SpriteSheetModel.FrameHeight;  
+
+            var croppingRect = new Int32Rect(x, y, SpriteSheetModel.FrameWidth, SpriteSheetModel.FrameHeight);
 
             return new CroppedBitmap(SpriteSheetModel.SpriteSheet, croppingRect);
         }
+
 
     }
 }
