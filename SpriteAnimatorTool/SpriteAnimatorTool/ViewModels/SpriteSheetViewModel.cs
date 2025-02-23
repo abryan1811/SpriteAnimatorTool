@@ -8,11 +8,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace SpriteAnimatorTool.ViewModels
 {
     public class SpriteSheetViewModel : RaisePropertyChanged
     {
+        private DispatcherTimer _timer;
+        private int _currentFrameIndex = 0;
+
         private CroppedBitmap _currentFrame;
         public CroppedBitmap CurrentFrame
         {
@@ -30,6 +34,7 @@ namespace SpriteAnimatorTool.ViewModels
         public int TotalFrames { get; private set; }
 
         public int UserFrameInput;
+        public int FrameNumber;
                        
         public SpriteSheetViewModel() 
         {
@@ -39,7 +44,10 @@ namespace SpriteAnimatorTool.ViewModels
             SpriteSheetModel = new SpriteSheetModel("C:/Users/adam1/Documents/Run.png", 1024, 128, UserFrameInput);
 
             CheckFramesOfSpriteSheet();
-            CurrentFrame = GetFrame(0);
+
+            SetupTimer();
+
+            CurrentFrame = GetFrame(_currentFrameIndex);
         }
 
         public void UserInputNumberOfSprites()
@@ -48,8 +56,7 @@ namespace SpriteAnimatorTool.ViewModels
         }
 
         public void CheckFramesOfSpriteSheet()
-        {
-           
+        {          
 
             int sheetWidth = SpriteSheetModel.SpriteSheet.PixelWidth;
             int sheetHeight = SpriteSheetModel.SpriteSheet.PixelHeight;
@@ -63,18 +70,30 @@ namespace SpriteAnimatorTool.ViewModels
         {
             if (frameIndex < 0 || frameIndex >= TotalFrames)
                 throw new ArgumentOutOfRangeException(nameof(frameIndex));
-
+            
             int row = frameIndex / FramesPerRow;  
             int column = frameIndex % FramesPerRow;
 
             int x = column * SpriteSheetModel.FrameWidth;
-            int y = row * SpriteSheetModel.FrameHeight;  
-
+            int y = row * SpriteSheetModel.FrameHeight;          
+            
             var croppingRect = new Int32Rect(x, y, SpriteSheetModel.FrameWidth, SpriteSheetModel.FrameHeight);
-
             return new CroppedBitmap(SpriteSheetModel.SpriteSheet, croppingRect);
         }
 
+        private void SetupTimer()
+        {
+            _timer = new DispatcherTimer();
+            _timer.Interval = TimeSpan.FromMilliseconds(100);
+            _timer.Tick += Timer_Tick;
+            _timer.Start();
+        }
+
+        private void  Timer_Tick(object sender, EventArgs e)
+        {
+            _currentFrameIndex = (_currentFrameIndex + 1) % TotalFrames;
+            CurrentFrame = GetFrame(_currentFrameIndex);
+        }
 
     }
 }
